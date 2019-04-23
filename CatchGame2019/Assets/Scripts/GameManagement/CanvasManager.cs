@@ -1,24 +1,30 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class CanvasManager : MonoBehaviour
 {
-    [SerializeField] private GameObject startNewGameButton;
+    public event Action StartNewGameClicked;
+
+    [SerializeField] private SimpleEventButton startNewGameButton;
 
     private void Start()
     {
         DontDestroyOnLoad(gameObject);
-        AddGameStateListener();
+        startNewGameButton.Click += StartNewGameClickedHandler;        
     }
 
-    private void AddGameStateListener()
+    private void StartNewGameClickedHandler()
     {
-        GameManager.Instance.OnGameStateChanged.AddListener(HandleGameStateChanged);
-    }
+        if (StartNewGameClicked != null)
+        {
+            StartNewGameClicked();
+        }
+    }    
 
-    private void HandleGameStateChanged(GameStateController.GameState currentState, GameStateController.GameState previousState)
+    public void GameStartedHandler()
     {
-        startNewGameButton.SetActive(currentState == GameStateController.GameState.PREGAME);        
+        startNewGameButton.gameObject.SetActive(false);
     }
 }

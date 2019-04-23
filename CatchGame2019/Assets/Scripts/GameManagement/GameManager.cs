@@ -1,56 +1,54 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
 
-[RequireComponent(typeof(SceneController))]
-[RequireComponent(typeof(GameStateController))]
-[RequireComponent(typeof(CanvasManager))]
-[RequireComponent(typeof(GameLevelController))]
 public class GameManager : Singleton<GameManager>
 {
-    public Events.EventGameState OnGameStateChanged;
+    [SerializeField] private SceneController sceneController;    
+    [SerializeField] private CanvasManager canvasManager;
+    [SerializeField] private GameLevelController gameLevelController;
+    [SerializeField] private ObjectSpawner objectSpawner;
+     
 
-    private SceneController sceneController;
-    private GameStateController gameStateController;
-    private CanvasManager canvasManager;
-    private GameLevelController gameLevelController;
-
-
+    
     private void Start()
-    {
+    {        
         DontDestroyOnLoad(gameObject);
-        InitiateGameSystemComponents();
+        
+        canvasManager.StartNewGameClicked += CanvasManager_StartNewGameClicked;
+        sceneController.NewGameStarted += SceneController_OnNewGameStarted;
+        sceneController.BootSceneStarted += SceneController_OnBootSceneStarted;
     }
 
-    private void InitiateGameSystemComponents()
-    {
-        sceneController = GetComponent<SceneController>();
-        gameStateController = GetComponent<GameStateController>();
-        canvasManager = GetComponent<CanvasManager>();
-        gameLevelController = GetComponent<GameLevelController>();
-    }
-
-    public void StartNewGame()
-    {
-        gameStateController.ChangeGameStateToLoading();
+    public void CanvasManager_StartNewGameClicked()
+    {        
         sceneController.StartNewGameScene();        
     }
 
-    public void SetupNewGame()
+    private void SceneController_OnNewGameStarted()
     {
-
-        gameStateController.ChangeGameStateToRunning();
+        SetupNewGame();
     }
 
-    public void StartBootScene()
+    private void SetupNewGame()
     {
-        gameStateController.ChangeGameStateToPregame();
+        canvasManager.GameStartedHandler();
+        float[] spawnIntervals=GetSpawnIntervals();
+        objectSpawner.StartSpawning(spawnIntervals[0], spawnIntervals[1]);
     }
 
-    public void CallOnGameStateChangedEvent(GameStateController.GameState currentState, GameStateController.GameState previousState)
+    private float[] GetSpawnIntervals()
     {
-        OnGameStateChanged.Invoke(currentState, previousState);
+        return gameLevelController.GetCurrentSpawnIntervals();
     }
+
+    private void SceneController_OnBootSceneStarted()
+    {
+
+    }
+
+    
 
 }

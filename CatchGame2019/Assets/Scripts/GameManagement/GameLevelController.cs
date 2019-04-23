@@ -12,6 +12,11 @@ public class GameLevelController : MonoBehaviour
 
     }
 
+
+    public float[] GetCurrentSpawnIntervals()
+    {
+        return new float[2] { 2f, 3f };
+    }
     
 
 }
