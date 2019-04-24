@@ -11,8 +11,8 @@ public class ObjectSpawner : MonoBehaviour
     private List<GameObject> listOfUnavailObj;
     private float maxWidth;
     private float ballHalfWidth;
-    private float spawnIntervalMin;
-    private float spawnIntervalMax;
+    private int spawnIntervalMin;
+    private int spawnIntervalMax;
 
 
     private void Start()
@@ -39,7 +39,7 @@ public class ObjectSpawner : MonoBehaviour
         maxWidth = screenToWorld.x - ballHalfWidth;
     }
 
-    public void StartSpawning(float spawnIntervalMin, float spawnIntervalMax)
+    public void StartSpawning(int spawnIntervalMin, int spawnIntervalMax)
     {
         this.spawnIntervalMin = spawnIntervalMin;
         this.spawnIntervalMax = spawnIntervalMax;
@@ -69,7 +69,6 @@ public class ObjectSpawner : MonoBehaviour
                 exactObj.SetActive(true);
                 listOfUnavailObj.Add(exactObj);
                 listOfAvailObj.Remove(exactObj);
-
                 yield return new WaitForSeconds(Random.Range(spawnIntervalMin, spawnIntervalMax));
             }
             

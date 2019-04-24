@@ -1,0 +1,7 @@
+{
+  "Levels":[
+    {"spawnIntervalMin":2,"spawnIntervalMax":3,"minLevelPassScore":2,"timer":20},
+    {"spawnIntervalMin":2,"spawnIntervalMax":4,"minLevelPassScore":4,"timer":15},
+    {"spawnIntervalMin":1,"spawnIntervalMax":2,"minLevelPassScore":6,"timer":10}
+    ]
+}

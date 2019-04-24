@@ -10,6 +10,7 @@ public class ObjectDeactivator : MonoBehaviour
     [SerializeField] private Transform insideHatExplosionPosition;
     private List<GameObject> listOfAvailObj;
     private List<GameObject> listOfUnavailObj;
+    private const int SCORE_INTERVAL= 1;
 
 
 
@@ -36,6 +37,7 @@ public class ObjectDeactivator : MonoBehaviour
 
     private void BombHitHandler(Collision2D collision)
     {
+        GameManager.Instance.DecreaseScore(SCORE_INTERVAL);
         collision.gameObject.GetComponent<SpawnableObject>().DisableObject();
 
         Vector2 collisionPoint = GetCollisionPoint(collision);
@@ -87,6 +89,7 @@ public class ObjectDeactivator : MonoBehaviour
 
     private void BallHitHandler(Collider2D collider)
     {
+        GameManager.Instance.IncreaseScore(SCORE_INTERVAL);
         collider.gameObject.GetComponent<SpawnableObject>().DisableObject();
     }
 
