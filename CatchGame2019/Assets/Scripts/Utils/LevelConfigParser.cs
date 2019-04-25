@@ -15,27 +15,18 @@ public class LevelConfigParser
     public void ParseLevelConfigJSON()
     {
         levelConfigObject = new LevelConfigClass();
-        levelConfigObject = JsonConvert.DeserializeObject<LevelConfigClass>(levelConfig.text);     
-        
+        levelConfigObject = JsonConvert.DeserializeObject<LevelConfigClass>(levelConfig.text); 
     }
 
-    public int GetSpawnIntervalMin(int currentLevel)
+    public CurrentLevelInfoDTO GetCurrentLevelInfoDTO(int currentLevel)
     {
-        return levelConfigObject.Levels[currentLevel].spawnIntervalMin;
-    }
+        CurrentLevelInfoDTO levelInfo = new CurrentLevelInfoDTO();
+        levelInfo.spawnIntervalMin = levelConfigObject.Levels[currentLevel].spawnIntervalMin;
+        levelInfo.spawnIntervalMax= levelConfigObject.Levels[currentLevel].spawnIntervalMax;
+        levelInfo.minLevelPassScore= levelConfigObject.Levels[currentLevel].minLevelPassScore;
+        levelInfo.timer= levelConfigObject.Levels[currentLevel].timer;
+        levelInfo.levelCount = levelConfigObject.Levels.Length;
 
-    public int GetSpawnIntervalMax(int currentLevel)
-    {
-        return levelConfigObject.Levels[currentLevel].spawnIntervalMax;
-    }
-
-    public int GetMinLevelPassScore(int currentLevel)
-    {
-        return levelConfigObject.Levels[currentLevel].minLevelPassScore;
-    }
-
-    public int GetCurrentTimer(int currentLevel)
-    {
-        return levelConfigObject.Levels[currentLevel].timer;
-    }
+        return levelInfo;
+    }   
 }

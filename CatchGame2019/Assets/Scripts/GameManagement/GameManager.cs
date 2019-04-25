@@ -9,6 +9,7 @@ public class GameManager : Singleton<GameManager>
     [SerializeField] TextAsset levelConfig;
     [SerializeField] private SceneController sceneController;    
     [SerializeField] private CanvasManager canvasManager;
+    [SerializeField] private LevelTimer levelTimer;
     
     [SerializeField] private ObjectSpawner objectSpawner;
 
@@ -19,14 +20,23 @@ public class GameManager : Singleton<GameManager>
     private void Start()
     {        
         DontDestroyOnLoad(gameObject);
-        gameLevelController= new GameLevelController(levelConfig);
+        gameLevelController= new GameLevelController(levelConfig,levelTimer);
+        sceneController.InitiateSceneController();
         gameLevelController.LevelCompleted += GameLevelController_OnLevelCompleted;
         gameLevelController.LevelFailed += GameLevelController_OnLevelFailed;
+        gameLevelController.TimerOneSecLeft += GameLevelController_TimerOneSecLeft;
 
         canvasManager.StartNewGameClicked += CanvasManager_StartNewGameClicked;
+        canvasManager.GoToNextLevelClicked += CanvasManager_GoToNextLevelClicked;
+        canvasManager.GameOverClicked += CanvasManager_GameOverClicked;
+        canvasManager.StartGameAgainClicked += CanvasManager_StartGameAgainClicked;
+
         sceneController.NewGameStarted += SceneController_OnNewGameStarted;
         sceneController.BootSceneStarted += SceneController_OnBootSceneStarted;
+
     }
+
+    
 
     public void CanvasManager_StartNewGameClicked()
     {        
@@ -35,15 +45,20 @@ public class GameManager : Singleton<GameManager>
 
     private void SceneController_OnNewGameStarted()
     {
-        SetupNewGame();
+        InitializeNewGame();
     }
 
-    private void SetupNewGame()
+    private void InitializeNewGame()
     {
         canvasManager.GameStartedHandler();
-
         gameLevelController.ParseLevelConfig();
-        int[] spawnIntervals=GetSpawnIntervals();        
+
+        StartGame();
+    }
+
+    private void StartGame()
+    {        
+        int[] spawnIntervals = GetSpawnIntervals();
         gameLevelController.StartNewTimer();
         objectSpawner.StartSpawning(spawnIntervals[0], spawnIntervals[1]);
     }
@@ -61,11 +76,30 @@ public class GameManager : Singleton<GameManager>
     private void GameLevelController_OnLevelCompleted()
     {
         Debug.Log("Level Completed");
+
+        if (gameLevelController.CheckIfNewLevelsExist())
+        {
+            canvasManager.LevelCompletedHandler(gameLevelController.GetCurrentScore());
+        }
+        else
+        {
+            gameLevelController.ResetLevel();
+            canvasManager.NoMoreLevelsHandler(gameLevelController.GetCurrentScore());
+        }
+
+             
     }
 
     private void GameLevelController_OnLevelFailed()
-    {
+    {        
         Debug.Log("Game Over");
+        gameLevelController.ResetLevel();
+        canvasManager.LevelFailedHandler(gameLevelController.GetCurrentScore());
+    }
+
+    private void GameLevelController_TimerOneSecLeft()
+    {
+        objectSpawner.StopSpawning();
     }
 
     public void IncreaseScore(int amount)
@@ -80,7 +114,39 @@ public class GameManager : Singleton<GameManager>
         canvasManager.UpdateScoreUI(gameLevelController.GetCurrentScore());
     }
 
-    //Change level function
+    private void ResetScore()
+    {
+        canvasManager.UpdateScoreUI(0);
+    }
+
+    private void CanvasManager_GoToNextLevelClicked()
+    {
+        ChangeLevel();
+    }
+
+    private void ChangeLevel()
+    {
+        if (gameLevelController.CheckIfNewLevelsExist())
+        {
+            gameLevelController.ResetScore();
+            ResetScore();
+            StartGame();
+        }
+    }
+
+
+    private void CanvasManager_GameOverClicked()
+    {
+        StartGame();
+    }
+
+    private void CanvasManager_StartGameAgainClicked()
+    {
+        StartGame();
+    }
+
+
+
 
 
 

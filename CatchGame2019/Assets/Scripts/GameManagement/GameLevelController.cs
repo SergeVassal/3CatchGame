@@ -5,7 +5,8 @@ using System.Timers;
 using System;
 
 public class GameLevelController 
-{    
+{
+    public event Action TimerOneSecLeft;
     public event Action LevelCompleted;
     public event Action LevelFailed;
 
@@ -17,15 +18,18 @@ public class GameLevelController
     private int spawnIntervalMax;
     private int minLevelPassScore;
     private int currentTimer;
-    private int currentScore;
-    private Timer levelTimer;
+    private int currentScore;   
+    private int levelCount;
+    private LevelTimer timer;
     
 
     
-    public GameLevelController(TextAsset levelConfigFile)
+    public GameLevelController(TextAsset levelConfigFile,LevelTimer levelTimer)
     {
         levelConfig = levelConfigFile;
-        levelTimer = new Timer(1000);
+        timer = levelTimer;
+        timer.TimerTicked += OnLevelTimerTicked;
+        
     }
 
 
@@ -40,10 +44,12 @@ public class GameLevelController
 
     private void SetLevelVariables(int currentLevel)
     {
-        spawnIntervalMin = levelConfigParser.GetSpawnIntervalMin(currentLevel);
-        spawnIntervalMax = levelConfigParser.GetSpawnIntervalMax(currentLevel);
-        minLevelPassScore = levelConfigParser.GetMinLevelPassScore(currentLevel);
-        currentTimer = levelConfigParser.GetCurrentTimer(currentLevel);        
+        CurrentLevelInfoDTO currentLevelInfo = levelConfigParser.GetCurrentLevelInfoDTO(currentLevel);
+        spawnIntervalMin = currentLevelInfo.spawnIntervalMin;
+        spawnIntervalMax = currentLevelInfo.spawnIntervalMax;
+        minLevelPassScore = currentLevelInfo.minLevelPassScore;
+        currentTimer = currentLevelInfo.timer;
+        levelCount = currentLevelInfo.levelCount;        
     }
 
 
@@ -55,18 +61,22 @@ public class GameLevelController
 
     public void StartNewTimer()
     {
-
-        levelTimer.Elapsed += new ElapsedEventHandler(OnLevelTimerElapsedEvent);
-        levelTimer.Enabled = true;       
-        
+        timer.StartTimer();  
     }
 
-    private void OnLevelTimerElapsedEvent(object sender, ElapsedEventArgs e)
+    private void OnLevelTimerTicked()
     {
         currentTimer -= 1;
-        if (currentTimer <= 0)
+        if (currentTimer <= 1)
         {
-            levelTimer.Stop();
+            if (TimerOneSecLeft != null)
+            {
+                TimerOneSecLeft();
+            }
+        }
+        if (currentTimer <= 0)
+        {            
+            timer.StopTimer();
             CheckIfLevelCompleted();
         }
         Debug.Log("currentTimer "+ currentTimer);       
@@ -82,11 +92,20 @@ public class GameLevelController
     public void DecreaseScore(int amount)
     {
         currentScore -= amount;
+        if (currentScore <= 0)
+        {
+            currentScore = 0;
+        }
     }
 
     public int GetCurrentScore()
     {
         return currentScore;
+    }
+
+    public void ResetLevel()
+    {
+        currentLevel = 0;
     }
 
 
@@ -97,19 +116,38 @@ public class GameLevelController
         {
             if (LevelCompleted != null)
             {
-                LevelCompleted();
                 currentLevel += 1;
+                LevelCompleted();                
             }
         }
         else
         {
             if (LevelFailed != null)
             {                
-                LevelFailed();
-                currentLevel = 0;
+                LevelFailed();                
             }
         }
     }
 
+    
+
+    public bool CheckIfNewLevelsExist()
+    {
+        if (currentLevel >= levelCount)
+        {
+            Debug.Log("No more levels!");
+            return false;
+        }
+        else
+        {
+            Debug.Log("Success, next level is  " + currentLevel);
+            return true;
+        }
+    }
+
+    public void ResetScore()
+    {       
+        currentScore = 0;        
+    }
 
 }

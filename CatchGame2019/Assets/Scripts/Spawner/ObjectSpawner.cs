@@ -13,6 +13,7 @@ public class ObjectSpawner : MonoBehaviour
     private float ballHalfWidth;
     private int spawnIntervalMin;
     private int spawnIntervalMax;
+    private IEnumerator spawnCoroutine;
 
 
     private void Start()
@@ -43,12 +44,15 @@ public class ObjectSpawner : MonoBehaviour
     {
         this.spawnIntervalMin = spawnIntervalMin;
         this.spawnIntervalMax = spawnIntervalMax;
-        StartCoroutine(Spawn());
+        
+        spawnCoroutine= Spawn();
+        StartCoroutine(spawnCoroutine);
+
     }
 
     public void StopSpawning()
     {
-        StopCoroutine(Spawn());
+        StopCoroutine(spawnCoroutine);
     }
 
 
@@ -63,7 +67,7 @@ public class ObjectSpawner : MonoBehaviour
             {
                 int randomInt = Random.Range(0, listOfAvailObj.Count);
                 GameObject exactObj = listOfAvailObj[randomInt];
-                exactObj.transform.position = new Vector3(Random.Range(-maxWidth, maxWidth), transform.position.y, 0f);
+                exactObj.transform.position = new Vector3(0f, transform.position.y, 0f);
                 exactObj.transform.rotation = Quaternion.identity;
                 exactObj.GetComponent<Rigidbody2D>().velocity = new Vector2(0f,0f);
                 exactObj.SetActive(true);

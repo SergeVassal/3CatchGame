@@ -9,7 +9,7 @@ public class SceneController:MonoBehaviour
     [SerializeField] private string initialSceneName;
     [SerializeField] private string bootSceneName;
 
-    public event Action NewGameStarted;
+    public event Action NewGameStarted;    
     public event Action BootSceneStarted;
 
     private AsyncOperation ao;
@@ -19,21 +19,19 @@ public class SceneController:MonoBehaviour
 
 
 
-    private void Start()
+    public void InitiateSceneController()
     {
         DontDestroyOnLoad(gameObject);
-        InitiateVariables();
-    }
-
-    private void InitiateVariables()
-    {
-        loadOperations = new List<AsyncOperation>();        
-
+        loadOperations = new List<AsyncOperation>();
+        currentSceneName = bootSceneName;        
     }
 
     public void StartNewGameScene()
-    {        
-        LoadScene(initialSceneName);  
+    {
+        if (currentSceneName == bootSceneName)
+        {
+            LoadScene(initialSceneName);
+        }  
     }
 
     
