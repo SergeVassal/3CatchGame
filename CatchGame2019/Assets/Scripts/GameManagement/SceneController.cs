@@ -32,9 +32,7 @@ public class SceneController:MonoBehaviour
         {
             LoadScene(initialSceneName);
         }  
-    }
-
-    
+    }    
 
     private void LoadScene(string sceneName)
     {
@@ -93,5 +91,4 @@ public class SceneController:MonoBehaviour
             BootSceneStarted();
         }
     }
-
 }

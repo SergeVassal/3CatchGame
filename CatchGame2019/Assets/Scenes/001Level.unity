@@ -326,7 +326,7 @@ MonoBehaviour:
   explosionPrefab: {fileID: 146166, guid: ee9d0b8cfdc21fd4295bd53c740f553c, type: 2}
   explosionPooledAmount: 3
   explosionTime: 3
-  insideHatExplosionPosition: {fileID: 0}
+  insideHatExplosionPosition: {fileID: 2060122952}
 --- !u!4 &742994967 stripped
 Transform:
   m_PrefabParentObject: {fileID: 4306813284233958, guid: 2aeed3aea617ac141be989a6c558c3dd,

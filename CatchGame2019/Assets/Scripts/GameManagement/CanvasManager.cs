@@ -20,6 +20,8 @@ public class CanvasManager : MonoBehaviour
     [SerializeField] private Text gameOverText;
     [SerializeField] private SimpleEventButton startGameAgainButton;
     [SerializeField] private Text noMoreLevelsText;
+    [SerializeField] private Text currentLevelText;
+
 
 
     private void Start()
@@ -43,7 +45,7 @@ public class CanvasManager : MonoBehaviour
     public void GameStartedHandler()
     {
         startNewGameButton.gameObject.SetActive(false);
-        
+        scoreText.gameObject.SetActive(true);
     }
 
     public void LevelCompletedHandler(int score)
@@ -107,6 +109,11 @@ public class CanvasManager : MonoBehaviour
         {
             StartGameAgainClicked();
         }
+    }
+
+    public void UpdateCurrentLevelText(int level)
+    {
+        currentLevelText.text = String.Format("Level: {0}",level.ToString());
     }
 
 

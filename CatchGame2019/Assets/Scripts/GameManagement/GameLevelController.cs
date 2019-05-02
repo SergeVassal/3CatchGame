@@ -10,10 +10,10 @@ public class GameLevelController
     public event Action LevelCompleted;
     public event Action LevelFailed;
 
-    private LevelConfigParser levelConfigParser;
-    
+    public int CurrentLevel { get; private set; }
+
+    private LevelConfigParser levelConfigParser;    
     private TextAsset levelConfig;
-    private int currentLevel=0;
     private int spawnIntervalMin;
     private int spawnIntervalMax;
     private int minLevelPassScore;
@@ -28,10 +28,8 @@ public class GameLevelController
     {
         levelConfig = levelConfigFile;
         timer = levelTimer;
-        timer.TimerTicked += OnLevelTimerTicked;
-        
+        timer.TimerTicked += OnLevelTimerTicked;        
     }
-
 
     public void ParseLevelConfig()
     {
@@ -39,8 +37,6 @@ public class GameLevelController
 
         levelConfigParser.ParseLevelConfigJSON();
     }
-
-
 
     private void SetLevelVariables(int currentLevel)
     {
@@ -52,10 +48,9 @@ public class GameLevelController
         levelCount = currentLevelInfo.levelCount;        
     }
 
-
     public int[] GetCurrentSpawnIntervals()
     {
-        SetLevelVariables(currentLevel);
+        SetLevelVariables(CurrentLevel);
         return new int[2] { spawnIntervalMin, spawnIntervalMax };
     }
 
@@ -105,10 +100,9 @@ public class GameLevelController
 
     public void ResetLevel()
     {
-        currentLevel = 0;
+        CurrentLevel = 0;
+        currentScore = 0;
     }
-
-
 
     private void CheckIfLevelCompleted()
     {
@@ -116,7 +110,7 @@ public class GameLevelController
         {
             if (LevelCompleted != null)
             {
-                currentLevel += 1;
+                CurrentLevel += 1;
                 LevelCompleted();                
             }
         }
@@ -127,20 +121,18 @@ public class GameLevelController
                 LevelFailed();                
             }
         }
-    }
-
-    
+    }    
 
     public bool CheckIfNewLevelsExist()
     {
-        if (currentLevel >= levelCount)
+        if (CurrentLevel >= levelCount)
         {
             Debug.Log("No more levels!");
             return false;
         }
         else
         {
-            Debug.Log("Success, next level is  " + currentLevel);
+            Debug.Log("Success, next level is  " + CurrentLevel);
             return true;
         }
     }
@@ -149,5 +141,4 @@ public class GameLevelController
     {       
         currentScore = 0;        
     }
-
 }

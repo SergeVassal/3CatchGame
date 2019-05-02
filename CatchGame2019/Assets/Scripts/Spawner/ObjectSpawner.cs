@@ -67,7 +67,7 @@ public class ObjectSpawner : MonoBehaviour
             {
                 int randomInt = Random.Range(0, listOfAvailObj.Count);
                 GameObject exactObj = listOfAvailObj[randomInt];
-                exactObj.transform.position = new Vector3(0f, transform.position.y, 0f);
+                exactObj.transform.position = new Vector3(Random.Range(-maxWidth,maxWidth), transform.position.y, 0f);
                 exactObj.transform.rotation = Quaternion.identity;
                 exactObj.GetComponent<Rigidbody2D>().velocity = new Vector2(0f,0f);
                 exactObj.SetActive(true);

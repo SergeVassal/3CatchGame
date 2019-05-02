@@ -9,11 +9,10 @@ public class GameManager : Singleton<GameManager>
     [SerializeField] TextAsset levelConfig;
     [SerializeField] private SceneController sceneController;    
     [SerializeField] private CanvasManager canvasManager;
-    [SerializeField] private LevelTimer levelTimer;
-    
+    [SerializeField] private LevelTimer levelTimer;    
     [SerializeField] private ObjectSpawner objectSpawner;
 
-    GameLevelController gameLevelController;
+    private GameLevelController gameLevelController;
 
 
 
@@ -34,9 +33,7 @@ public class GameManager : Singleton<GameManager>
         sceneController.NewGameStarted += SceneController_OnNewGameStarted;
         sceneController.BootSceneStarted += SceneController_OnBootSceneStarted;
 
-    }
-
-    
+    }    
 
     public void CanvasManager_StartNewGameClicked()
     {        
@@ -57,7 +54,8 @@ public class GameManager : Singleton<GameManager>
     }
 
     private void StartGame()
-    {        
+    {
+        canvasManager.UpdateCurrentLevelText(gameLevelController.CurrentLevel);
         int[] spawnIntervals = GetSpawnIntervals();
         gameLevelController.StartNewTimer();
         objectSpawner.StartSpawning(spawnIntervals[0], spawnIntervals[1]);
@@ -80,6 +78,8 @@ public class GameManager : Singleton<GameManager>
         if (gameLevelController.CheckIfNewLevelsExist())
         {
             canvasManager.LevelCompletedHandler(gameLevelController.GetCurrentScore());
+            canvasManager.UpdateCurrentLevelText(gameLevelController.CurrentLevel);
+
         }
         else
         {
@@ -93,8 +93,8 @@ public class GameManager : Singleton<GameManager>
     private void GameLevelController_OnLevelFailed()
     {        
         Debug.Log("Game Over");
-        gameLevelController.ResetLevel();
         canvasManager.LevelFailedHandler(gameLevelController.GetCurrentScore());
+        gameLevelController.ResetLevel();
     }
 
     private void GameLevelController_TimerOneSecLeft()
@@ -134,7 +134,6 @@ public class GameManager : Singleton<GameManager>
         }
     }
 
-
     private void CanvasManager_GameOverClicked()
     {
         StartGame();
@@ -143,11 +142,6 @@ public class GameManager : Singleton<GameManager>
     private void CanvasManager_StartGameAgainClicked()
     {
         StartGame();
-    }
-
-
-
-
-
+    } 
 
 }
